@@ -3,7 +3,7 @@
 [![Python 3.9+](https://img.shields.io/badge/Python-3.9+-blue.svg)](https://www.python.org/downloads/)
 [![PyTorch 2.0+](https://img.shields.io/badge/PyTorch-2.0+-red.svg)](https://pytorch.org/)
 [![License MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
-[![Tests](https://github.com/yourusername/PruneVision-AI/actions/workflows/tests.yml/badge.svg)](https://github.com/yourusername/PruneVision-AI/actions)
+[![Tests](https://github.com/harishy0406/PruneVision-AI/actions/workflows/tests.yml/badge.svg)](https://github.com/harishy0406/PruneVision-AI/actions)
 
 **PruneVision AI** is a production-grade platform for self-pruning neural networks, enabling efficient edge deployment with minimal accuracy loss. Built with learnable gating mechanisms, it automates model compression during training.
 
