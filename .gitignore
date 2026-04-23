@@ -1,0 +1,17 @@
+/data
+/outputs
+__pycache__/
+*.pyc
+*.pyo
+*.egg-info/
+dist/
+build/
+.eggs/
+*.onnx
+*.pth
+*.pt
+.env
+.venv/
+venv/
+*.log
+count_images.ps1
