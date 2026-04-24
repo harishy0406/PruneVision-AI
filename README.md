@@ -23,11 +23,11 @@ PruneVision introduces **self-pruning architecture** with learnable gating mecha
 - ✅ **Production-ready** without post-training optimization
 
 ### Real-World Impact
-Perfect for retail applications:
-- 🛒 **Autonomous Checkout** - Real-time product recognition
-- 📦 **Inventory Tracking** - Local edge processing
-- 🔒 **Loss Prevention** - On-device video analysis
-- 👁️ **Shelf Monitoring** - Planogram compliance detection
+Perfect for lightweight image classification and edge AI research:
+- 🧠 **CIFAR-10 Benchmarking** - Compare pruning across compact vision models
+- ⚡ **Edge Deployment** - Efficient inference on resource-constrained devices
+- 📉 **Model Compression** - Reduce parameters with minimal accuracy loss
+- 🔬 **Research Prototyping** - Study sparsity, gating, and transfer learning
 
 ## ✨ Key Features
 
