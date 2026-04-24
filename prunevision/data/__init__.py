@@ -1,1 +1,1 @@
-from .dataset import RetailDataset, get_dataloaders
+from .dataset import CIFAR10Wrapper, get_dataloaders

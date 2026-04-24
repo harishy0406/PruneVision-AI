@@ -18,8 +18,8 @@ for d in [OUTPUT_DIR, CHECKPOINT_DIR, EXPORT_DIR, LOG_DIR]:
     os.makedirs(d, exist_ok=True)
 
 # ─── Dataset ─────────────────────────────────────────────────────────────────
-NUM_CLASSES = 25
-IMAGE_SIZE = 224  # Standard for pretrained models
+NUM_CLASSES = 10  # CIFAR-10 has 10 classes
+IMAGE_SIZE = 224  # Standard for pretrained models (CIFAR-10 images resized from 32x32)
 TRAIN_SPLIT = 0.70
 VAL_SPLIT = 0.15
 TEST_SPLIT = 0.15
@@ -96,10 +96,8 @@ ONNX_OPSET_VERSION = 17
 ONNX_DYNAMIC_AXES = {"input": {0: "batch_size"}, "output": {0: "batch_size"}}
 
 # ─── Class Names ─────────────────────────────────────────────────────────────
+# CIFAR-10 classes
 CLASS_NAMES = [
-    "BEANS", "CAKE", "CANDY", "CEREAL", "CHIPS",
-    "CHOCOLATE", "COFFEE", "CORN", "FISH", "FLOUR",
-    "HONEY", "JAM", "JUICE", "MILK", "NUTS",
-    "OIL", "PASTA", "RICE", "SODA", "SPICES",
-    "SUGAR", "TEA", "TOMATO_SAUCE", "VINEGAR", "WATER",
+    "airplane", "automobile", "bird", "cat", "deer",
+    "dog", "frog", "horse", "ship", "truck",
 ]

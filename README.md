@@ -132,10 +132,13 @@ streamlit run app.py
 
 ## 📊 Dataset
 
-- **25 retail product classes**: BEANS, CAKE, CANDY, CEREAL, CHIPS, CHOCOLATE, COFFEE, CORN, FISH, FLOUR, HONEY, JAM, JUICE, MILK, NUTS, OIL, PASTA, RICE, SODA, SPICES, SUGAR, TEA, TOMATO_SAUCE, VINEGAR, WATER
-- **4,947 images** (256×256 RGB PNG)
-- Stratified 70/15/15 train/val/test split
-- Class-weighted sampling for imbalanced data
+- **CIFAR-10 Dataset**: 10 object classification classes
+  - Airplane, Automobile, Bird, Cat, Deer, Dog, Frog, Horse, Ship, Truck
+- **60,000 total images** (32×32 RGB, auto-downloaded from torchvision)
+  - Training: 50,000 images (5,000 per class)
+  - Test: 10,000 images (1,000 per class)
+- Balanced dataset with equal samples per class
+- Class-weighted sampling for optimal training convergence
 
 ## 🏗️ Model Zoo
 

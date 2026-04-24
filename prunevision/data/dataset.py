@@ -1,7 +1,7 @@
 """
-PruneVision AI - Retail Product Dataset
-Custom dataset for loading retail product images with augmentation,
-stratified train/val/test splitting, and class-weighted sampling.
+PruneVision AI - CIFAR-10 Dataset
+Dataset loading for CIFAR-10 with augmentation,
+train/val/test splitting, and class-weighted sampling.
 """
 
 import os
@@ -10,8 +10,8 @@ from typing import Tuple, Dict, Optional, List
 from collections import Counter
 
 import torch
-from torch.utils.data import Dataset, DataLoader, WeightedRandomSampler
-from torchvision import transforms
+from torch.utils.data import Dataset, DataLoader, WeightedRandomSampler, random_split
+from torchvision import transforms, datasets
 from PIL import Image
 from sklearn.model_selection import train_test_split
 
@@ -20,43 +20,31 @@ sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", ".."))
 import config
 
 
-class RetailDataset(Dataset):
+class CIFAR10Wrapper(Dataset):
     """
-    Retail product image dataset.
-    
-    Loads images from a directory structure where each subdirectory is a class:
-        data/images/BEANS/001.png
-        data/images/CAKE/001.png
-        ...
+    Wrapper around CIFAR-10 dataset with optional transform.
     
     Args:
-        image_paths (list): List of image file paths.
-        labels (list): Corresponding integer labels.
+        cifar_dataset: Torchvision CIFAR10 dataset instance.
         transform (callable, optional): Transform to apply to images.
         class_names (list, optional): Ordered list of class names.
     """
     
     def __init__(
         self,
-        image_paths: List[str],
-        labels: List[int],
+        cifar_dataset,
         transform: Optional[transforms.Compose] = None,
         class_names: Optional[List[str]] = None,
     ):
-        self.image_paths = image_paths
-        self.labels = labels
+        self.cifar_dataset = cifar_dataset
         self.transform = transform
         self.class_names = class_names or config.CLASS_NAMES
     
     def __len__(self) -> int:
-        return len(self.image_paths)
+        return len(self.cifar_dataset)
     
     def __getitem__(self, idx: int) -> Tuple[torch.Tensor, int]:
-        img_path = self.image_paths[idx]
-        label = self.labels[idx]
-        
-        # Load image
-        image = Image.open(img_path).convert("RGB")
+        image, label = self.cifar_dataset[idx]
         
         if self.transform:
             image = self.transform(image)
@@ -65,7 +53,8 @@ class RetailDataset(Dataset):
     
     def get_class_distribution(self) -> Dict[str, int]:
         """Return count of samples per class."""
-        counter = Counter(self.labels)
+        labels = [label for _, label in self.cifar_dataset]
+        counter = Counter(labels)
         return {
             self.class_names[k]: v 
             for k, v in sorted(counter.items())
@@ -78,53 +67,15 @@ class RetailDataset(Dataset):
         Returns:
             Tensor of shape (num_classes,) with weight per class.
         """
-        counter = Counter(self.labels)
-        total = len(self.labels)
+        labels = [label for _, label in self.cifar_dataset]
+        counter = Counter(labels)
+        total = len(labels)
         num_classes = len(self.class_names)
         weights = torch.zeros(num_classes)
         for cls_idx in range(num_classes):
             count = counter.get(cls_idx, 1)
             weights[cls_idx] = total / (num_classes * count)
         return weights
-
-
-def _load_image_paths_and_labels(
-    data_dir: str,
-    class_names: Optional[List[str]] = None,
-) -> Tuple[List[str], List[int], List[str]]:
-    """
-    Scan data directory and collect image paths with labels.
-    
-    Args:
-        data_dir: Root directory containing class subdirectories.
-        class_names: Optional predetermined class ordering.
-        
-    Returns:
-        (image_paths, labels, class_names)
-    """
-    if class_names is None:
-        # Sort for deterministic ordering
-        class_names = sorted([
-            d for d in os.listdir(data_dir) 
-            if os.path.isdir(os.path.join(data_dir, d))
-        ])
-    
-    class_to_idx = {name: idx for idx, name in enumerate(class_names)}
-    
-    image_paths = []
-    labels = []
-    
-    for class_name in class_names:
-        class_dir = os.path.join(data_dir, class_name)
-        if not os.path.isdir(class_dir):
-            continue
-        
-        for fname in sorted(os.listdir(class_dir)):
-            if fname.lower().endswith((".png", ".jpg", ".jpeg", ".bmp", ".webp")):
-                image_paths.append(os.path.join(class_dir, fname))
-                labels.append(class_to_idx[class_name])
-    
-    return image_paths, labels, class_names
 
 
 def get_transforms(split: str = "train") -> transforms.Compose:
@@ -179,10 +130,10 @@ def get_dataloaders(
     use_weighted_sampler: bool = True,
 ) -> Tuple[DataLoader, DataLoader, DataLoader, List[str], torch.Tensor]:
     """
-    Create train/val/test DataLoaders with stratified splitting.
+    Create train/val/test DataLoaders for CIFAR-10.
     
     Args:
-        data_dir: Root directory with class subdirectories.
+        data_dir: Root directory for CIFAR-10 data (defaults to ./data).
         batch_size: Batch size for DataLoader.
         num_workers: Number of worker processes.
         use_weighted_sampler: If True, use weighted random sampling for train.
@@ -190,61 +141,80 @@ def get_dataloaders(
     Returns:
         (train_loader, val_loader, test_loader, class_names, class_weights)
     """
-    data_dir = data_dir or config.DATA_DIR
+    data_dir = data_dir or os.path.join(config.BASE_DIR, "data")
     batch_size = batch_size or config.BATCH_SIZE
     num_workers = num_workers if num_workers is not None else config.NUM_WORKERS
     
-    # Load all paths and labels
-    image_paths, labels, class_names = _load_image_paths_and_labels(
-        data_dir, config.CLASS_NAMES
+    # Create data directory if needed
+    os.makedirs(data_dir, exist_ok=True)
+    
+    # Define transforms
+    train_transform = get_transforms("train")
+    val_transform = get_transforms("val")
+    test_transform = get_transforms("test")
+    
+    # Load CIFAR-10
+    print("[Dataset] Loading CIFAR-10...")
+    cifar10_train = datasets.CIFAR10(
+        root=data_dir,
+        train=True,
+        download=True,
+        transform=None  # We'll apply transforms per split
+    )
+    cifar10_test = datasets.CIFAR10(
+        root=data_dir,
+        train=False,
+        download=True,
+        transform=None
     )
     
-    print(f"[Dataset] Found {len(image_paths)} images across {len(class_names)} classes")
-    
-    # Stratified train/val/test split
-    train_paths, temp_paths, train_labels, temp_labels = train_test_split(
-        image_paths, labels,
-        test_size=(config.VAL_SPLIT + config.TEST_SPLIT),
-        stratify=labels,
-        random_state=config.RANDOM_SEED,
+    # Split training set into train/val (80/20 of 50k = 40k/10k)
+    train_size = int(0.8 * len(cifar10_train))
+    val_size = len(cifar10_train) - train_size
+    train_subset, val_subset = random_split(
+        cifar10_train,
+        [train_size, val_size],
+        generator=torch.Generator().manual_seed(config.RANDOM_SEED)
     )
     
-    # Split remaining into val and test
-    relative_test_size = config.TEST_SPLIT / (config.VAL_SPLIT + config.TEST_SPLIT)
-    val_paths, test_paths, val_labels, test_labels = train_test_split(
-        temp_paths, temp_labels,
-        test_size=relative_test_size,
-        stratify=temp_labels,
-        random_state=config.RANDOM_SEED,
+    print(f"[Dataset] Train: {train_size}, Val: {val_size}, Test: {len(cifar10_test)}")
+    
+    # Wrap datasets with transforms and class names
+    train_dataset = CIFAR10Wrapper(
+        train_subset,
+        transform=train_transform,
+        class_names=config.CLASS_NAMES,
+    )
+    val_dataset = CIFAR10Wrapper(
+        val_subset,
+        transform=val_transform,
+        class_names=config.CLASS_NAMES,
+    )
+    test_dataset = CIFAR10Wrapper(
+        cifar10_test,
+        transform=test_transform,
+        class_names=config.CLASS_NAMES,
     )
     
-    print(f"[Dataset] Train: {len(train_paths)}, Val: {len(val_paths)}, Test: {len(test_paths)}")
-    
-    # Create datasets
-    train_dataset = RetailDataset(
-        train_paths, train_labels,
-        transform=get_transforms("train"),
-        class_names=class_names,
-    )
-    val_dataset = RetailDataset(
-        val_paths, val_labels,
-        transform=get_transforms("val"),
-        class_names=class_names,
-    )
-    test_dataset = RetailDataset(
-        test_paths, test_labels,
-        transform=get_transforms("test"),
-        class_names=class_names,
-    )
-    
-    # Class weights for loss function
-    class_weights = train_dataset.get_class_weights()
+    # Get class distribution and weights
+    print("[Dataset] Computing class weights...")
+    all_labels = [label for _, label in cifar10_train]
+    class_weights = torch.zeros(len(config.CLASS_NAMES))
+    label_counts = Counter(all_labels)
+    total = len(all_labels)
+    num_classes = len(config.CLASS_NAMES)
+    for cls_idx in range(num_classes):
+        count = label_counts.get(cls_idx, 1)
+        class_weights[cls_idx] = total / (num_classes * count)
     
     # Weighted sampler for training (handles class imbalance)
     train_sampler = None
     train_shuffle = True
     if use_weighted_sampler:
-        sample_weights = [class_weights[label].item() for label in train_labels]
+        train_labels = [label for _, label in train_subset.dataset]
+        train_subset_indices = train_subset.indices
+        train_subset_labels = [train_labels[idx] for idx in train_subset_indices]
+        sample_weights = [class_weights[label].item() for label in train_subset_labels]
         train_sampler = WeightedRandomSampler(
             weights=sample_weights,
             num_samples=len(sample_weights),
@@ -277,4 +247,4 @@ def get_dataloaders(
         pin_memory=False,
     )
     
-    return train_loader, val_loader, test_loader, class_names, class_weights
+    return train_loader, val_loader, test_loader, config.CLASS_NAMES, class_weights
