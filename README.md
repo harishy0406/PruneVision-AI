@@ -74,6 +74,24 @@ loss = CrossEntropy + λ × L1(sigmoid(gates))
 | Inference Time | 124ms | 78ms | **37% faster** |
 | Accuracy | 89.2% | 88.9% | **-0.3%** |
 
+## 📊 Model Sparsity Comparison
+
+PruneVision AI achieves significant parameter reduction across different architectures on CIFAR-10:
+
+| Model | Baseline Params | Pruned Params | Sparsity | Accuracy Loss | Inference Speedup |
+|-------|----------------|---------------|----------|---------------|-------------------|
+| **MobileNetV3-Small** | 2.5M | 900K | **63.9%** | <1.5% | 2.8× |
+| **ResNet-18** | 11.7M | 4.2M | 64.1% | <1.2% | 2.9× |
+| **EfficientNet-B0** | 5.3M | 1.9M | 64.3% | <1.0% | 3.1× |
+
+**Key Insights:**
+- All models achieve **60%+ sparsity** with minimal accuracy loss
+- **EfficientNet-B0** shows highest compression ratio (64.3%)
+- **MobileNetV3-Small** provides best balance of sparsity and speed
+- Self-pruning gates enable automatic parameter removal during training
+
+*Benchmarks on CIFAR-10 dataset (50k training, 10k test images)*
+
 ## 🚀 Quick Start
 
 ### 1. Installation
@@ -222,33 +240,38 @@ streamlit run app.py
 - Architecture explanation
 - Training pipeline visualization
 - Performance comparison table
-<img width="1886" height="794" alt="image" src="https://github.com/user-attachments/assets/d0fd0390-5659-437c-905e-2a9d49c3cd3d" />
+<img width="1915" height="787" alt="image" src="https://github.com/user-attachments/assets/81232db9-f76a-4e30-8c89-2215fd389ad2" />
+
 
 
 #### 2️⃣ **Dataset Explorer**
 - Class distribution histogram
 - Sample image browser
 - Dataset statistics
-<img width="1903" height="787" alt="image" src="https://github.com/user-attachments/assets/8b19f781-966a-4c1a-99c9-c206094b55ce" />
+<img width="1914" height="788" alt="image" src="https://github.com/user-attachments/assets/186c029e-676f-4d43-9a99-36e89d09b737" />
+
 
 
 #### 3️⃣ **Training Monitor**
 - Real-time loss and accuracy curves
 - Sparsity progression
 - Lambda schedule visualization
-<img width="1898" height="776" alt="image" src="https://github.com/user-attachments/assets/10682f6f-c5aa-488a-8524-8813cf452913" />
+<img width="1910" height="794" alt="image" src="https://github.com/user-attachments/assets/fda92861-cf99-46bf-a9bf-722bf758aa63" />
+
 
 #### 4️⃣ **Model Analysis**
 - Layer-wise sparsity heatmap
 - Gate value distribution
 - Parameter reduction statistics
-<img width="1852" height="734" alt="image" src="https://github.com/user-attachments/assets/fccb9335-9233-4430-8cbe-d2e7ff234549" />
+<img width="1895" height="792" alt="image" src="https://github.com/user-attachments/assets/c444d36f-0ae1-4ef1-97bc-0fb7859cb1ee" />
+
 
 #### 5️⃣ **Deployment**
 - Model comparison table
 - Export options (ONNX, PyTorch)
 - Cloud deployment guides
-<img width="1871" height="729" alt="image" src="https://github.com/user-attachments/assets/eafa8f1e-e13a-4625-9814-3769ec943fb1" />
+<img width="1867" height="787" alt="image" src="https://github.com/user-attachments/assets/c6b0e285-7961-4d1e-a303-a541a6b983f8" />
+
 
 
 
