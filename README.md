@@ -1,4 +1,4 @@
-# ✂️ PruneVision AI — Hybrid Self-Pruning Vision Framework
+# ✂️ PruneVision AI — Hybrid Self-Pruning Framework
 [![Python 3.9+](https://img.shields.io/badge/Python-3.9+-blue.svg)](https://www.python.org/downloads/)
 [![Docker](https://img.shields.io/badge/Docker-Ready-blue)](https://www.docker.com/)
 [![Streamlit](https://img.shields.io/badge/Streamlit-1.30%2B-FF4B4B)](https://streamlit.io/)
@@ -8,7 +8,7 @@
 
 PruneVision AI is a PyTorch-based hybrid self-pruning vision framework that combines feature representations from MobileNetV3, ResNet-18, and EfficientNet-B0 with custom prunable layers and learnable gating mechanisms for dynamic sparsity during training. The project trains compact classifiers on CIFAR-10, applies L1 regularization to encourage sparse gates, and exports pruned models for efficient inference. The implementation is organized under [Full Implementation](Full%20Implementation), while the repository root stays focused on this report.
 
-## Overview
+## 🚀 Overview
 
 The codebase features a hybrid architecture with three core components:
 
@@ -54,30 +54,33 @@ Full Implementation/
 
 The custom pruned hybrid model (`pruned_hybrid.py`) is the centerpiece, implementing the ensemble architecture with learnable gating for dynamic sparsity.
 
-## Hybrid Architecture Design
+## 🏗️ Hybrid Architecture Design
+<img width="8191" height="946" alt="image" src="https://github.com/user-attachments/assets/c0ab661d-1017-462c-84fb-72e5c2e979a8" />
 
-### Feature Fusion Strategy
+### 🧠 Feature Fusion Strategy
 - **Parallel Backbones**: Three pretrained models extract diverse feature representations
 - **Adaptive Pooling**: Standardizes feature dimensions for seamless concatenation
 - **Custom Prunable Layer**: Gated fusion layer with learnable sparsity masks
 - **Unified Classifier**: Single head for final prediction
 
-### Sparsity Mechanism
+### ⚡Sparsity Mechanism
 Each backbone and the fusion layer incorporate learnable sigmoid gates that control channel activation. L1 regularization drives unimportant channels to zero, enabling automatic pruning during training without manual intervention.
 
-## Answers
+## 🎯 Answers
 
-### Why L1 on sigmoid gates encourages sparsity
+### 1️⃣ Why L1 on sigmoid gates encourages sparsity
 
 Each gate is passed through a sigmoid function, constraining its output to the range $[0, 1]$. This sigmoid gate acts as a multiplicative mask on the corresponding channel, where values near 1 keep the channel active and values near 0 effectively prune it by scaling the channel's contribution to near zero.
 
-Adding an L1 penalty on these gate values creates a regularization term in the loss function: $\mathcal{L}_{total} = \mathcal{L}_{task} + \lambda \sum_{i} |g_i|$, where $g_i$ are the gate values and $\lambda$ controls the pruning strength. The optimizer minimizes this total loss, and since L1 penalty grows linearly with the gate magnitude, it becomes increasingly expensive to maintain gates away from zero.
+Adding an L1 penalty on these gate values creates a regularization term in the loss function: 
+**Total Loss = L<sub>task</sub> + λ Σ |g<sub>i</sub>|**
+where $g_i$ are the gate values and $\lambda$ controls the pruning strength. The optimizer minimizes this total loss, and since L1 penalty grows linearly with the gate magnitude, it becomes increasingly expensive to maintain gates away from zero.
 
 During training, the optimizer naturally pushes irrelevant or redundant channels toward zero to reduce the regularization cost, while preserving important channels that contribute to task performance. This self-pruning mechanism operates across all three backbones (MobileNetV3, ResNet-18, EfficientNet-B0) and the custom fusion layer, enabling automatic discovery of an optimal sparse architecture without manual pruning schedules.
 
 In the hybrid model, this approach is particularly effective because it can selectively prune redundant features across the ensemble, ensuring each backbone contributes unique, non-overlapping representations while maintaining high accuracy.
 
-### Hybrid Model Performance Summary
+### 📊 Hybrid Model Performance Summary
 
 | Aspect | Individual Models Avg | Hybrid Model | Improvement |
 |--------|----------------------|--------------|-------------|
@@ -107,13 +110,16 @@ The hybrid architecture achieves enhanced compression by combining complementary
 
 ### Final gate distribution plot
 
+<img width="1194" height="637" alt="image" src="https://github.com/user-attachments/assets/69758f24-232f-456e-8737-8605973948ac" />
+
+<img width="1204" height="636" alt="image" src="https://github.com/user-attachments/assets/e0a449c1-3191-489f-97fb-07328c946d21" />
 
 
 ## Snapshots and Demo
 
 ### Project demo
 
-[Watch the demo GIF](Full%20Implementation/Work%20Demo(Prunvison%20AI).gif)
+![image](https://github.com/harishy0406/PruneVision-AI/blob/main/Full%20Implementation/Work%20Demo(Prunvison%20AI).gif)
 
 ### Dashboard snapshots
 
