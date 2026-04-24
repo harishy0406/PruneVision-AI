@@ -594,8 +594,9 @@ with st.sidebar:
     # Model selection
     selected_model = st.selectbox(
         "Select Model",
-        ["mobilenetv3_small", "resnet18", "efficientnet_b0"],
+        ["hybrid", "mobilenetv3_small", "resnet18", "efficientnet_b0"],
         format_func=lambda x: {
+            "hybrid": "🌟 Hybrid Ensemble",
             "mobilenetv3_small": "🔹 MobileNetV3-Small",
             "resnet18": "🔸 ResNet-18",
             "efficientnet_b0": "🔻 EfficientNet-B0",

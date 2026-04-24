@@ -17,7 +17,7 @@ import torch
 
 import config
 from prunevision.data.dataset import get_dataloaders
-from prunevision.models import PrunedMobileNetV3, PrunedResNet18, PrunedEfficientNetB0
+from prunevision.models import PrunedMobileNetV3, PrunedResNet18, PrunedEfficientNetB0, PrunedHybrid
 from prunevision.train.trainer import PruneVisionTrainer
 from prunevision.train.metrics import measure_inference_latency, get_classification_report
 from prunevision.deploy.pruner import HardPruner
@@ -28,6 +28,7 @@ MODEL_REGISTRY = {
     "mobilenetv3_small": PrunedMobileNetV3,
     "resnet18": PrunedResNet18,
     "efficientnet_b0": PrunedEfficientNetB0,
+    "hybrid": PrunedHybrid,
 }
 
 

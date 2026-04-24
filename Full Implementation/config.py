@@ -39,7 +39,7 @@ IMAGENET_STD = [0.229, 0.224, 0.225]
 
 # ─── Model ───────────────────────────────────────────────────────────────────
 # Available: "mobilenetv3_small", "resnet18", "efficientnet_b0"
-DEFAULT_MODEL = "mobilenetv3_small"
+DEFAULT_MODEL = "hybrid"
 PRETRAINED = True
 FREEZE_EARLY_LAYERS = True  # Freeze early backbone layers for transfer learning
 
