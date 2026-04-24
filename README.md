@@ -212,6 +212,11 @@ streamlit run app.py
 ```
 
 ### Dashboard Tabs
+#### **Live Demo**
+- Image upload and classification
+- Real-time inference
+- Prediction confidence scores
+![image](https://github.com/harishy0406/PruneVision-AI/blob/main/Work%20Demo(Prunvison%20AI).gif)
 
 #### 1️⃣ **Overview**
 - Architecture explanation
@@ -245,12 +250,6 @@ streamlit run app.py
 - Cloud deployment guides
 <img width="1871" height="729" alt="image" src="https://github.com/user-attachments/assets/eafa8f1e-e13a-4625-9814-3769ec943fb1" />
 
-#### 6️⃣ **Live Demo**
-- Image upload and classification
-- Real-time inference
-- Prediction confidence scores
-[
-<img width="800" height="330" alt="image" src="https://github.com/user-attachments/assets/240498d0-6707-45c5-a6b0-1f9b244eea0b" />](https://s4.ezgif.com/tmp/ezgif-4f08acce8f35c22f.gif)
 
 
 ---
